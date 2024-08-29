@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro e Sorteio de Times</title>
+    <style>
+        /* Estilos mantidos conforme solicitado */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e9ecef;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #343a40;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        h3 {
+            text-align: center;
+            color: #8e9fb0;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            
+        }
+        textarea {
+            width: 100%;
+            max-width: 600px;
+            height: 150px;
+            padding: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            max-width: 600px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            text-align: left;
+            font-size: 1rem;
+        }
+        th {
+            background-color: #343a40;
+            color: white;
+        }
+        td input {
+            width: 60px;
+            padding: 5px;
+            text-align: center;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: #f8f9fa;
+        }
+        #container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .team {
+            width: 30%;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .team h2 {
+            color: #007bff;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        .team ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+        .team li {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            text-align: center;
+            font-size: 1rem;
+            color: #495057;
+        }
+        .team li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cadastrar Lista de Jogadores</h1>
+    
+    <textarea id="listaJogadores" placeholder="Insira a lista de Jogadores aqui, informando um jogador por linha..."></textarea>
+    
+    <button onclick="gerarTabela()">Gerar Tabela</button>
+    <h3>
+        Informar o nível dos jogadores é OPCIONAL. <br>
+        Ao informar os níveis, a divisão dos times ficará mais equilibrada.
+    </h3>
+    
+    <table id="tabelaJogadores">
+        <thead>
+            <tr>
+                <th>Jogador</th>
+                <th>Nível</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    
+    <button onclick="sortearTimes()">Sortear Times</button>
+    <div id="container">
+        <div class="team">
+            <h2>Time 1</h2>
+            <ul id="time1"></ul>
+        </div>
+        <div class="team">
+            <h2>Time 2</h2>
+            <ul id="time2"></ul>
+        </div>
+        <div class="team">
+            <h2>Time 3</h2>
+            <ul id="time3"></ul>
+        </div>
+    </div>
+    <h5 id="horaAtual"></h5>
+
+    <script>
+        function mostrarHoraNoHTML() {
+            var agora = new Date();
+            // Obtendo a data formatada como dd/mm/yyyy
+            var dia = agora.getDate();
+            var mes = agora.getMonth() + 1; // Meses começam de 0
+            var ano = agora.getFullYear();
+            if (dia < 10) dia = "0" + dia;
+            if (mes < 10) mes = "0" + mes;
+            var dataFormatada = dia + "/" + mes + "/" + ano;
+            // Obtendo a hora formatada como hh:mm:ss
+            var horas = agora.getHours();
+            var minutos = agora.getMinutes();
+            var segundos = agora.getSeconds();
+            if (horas < 10) horas = "0" + horas;
+            if (minutos < 10) minutos = "0" + minutos;
+            if (segundos < 10) segundos = "0" + segundos;
+            var horaFormatada = horas + ":" + minutos + ":" + segundos;
+            // Construindo a string final
+            var mensagem = "Gerado em " + dataFormatada + " às " + horaFormatada;
+            // Atualizando o conteúdo do elemento <h5> com a mensagem
+            document.getElementById('horaAtual').innerText = mensagem;            
+        }        
+
+        function gerarTabela() {
+            const textarea = document.getElementById('listaJogadores');
+            const tabela = document.getElementById('tabelaJogadores').getElementsByTagName('tbody')[0];
+            
+            // Limpa a tabela existente
+            tabela.innerHTML = '';
+            
+            // Obtém a lista de jogadores
+            const linhas = textarea.value.trim().split('\n');
+            if (!linhas.length) {
+                alert("Por favor, insira a lista de jogadores.");
+                return;
+            }
+            
+            // Adiciona cada jogador à tabela
+            linhas.forEach(linha => {
+                const jogador = linha.trim();
+                
+                if (jogador) {
+                    const novaLinha = tabela.insertRow();
+                    const celulaNome = novaLinha.insertCell(0);
+                    const celulaNivel = novaLinha.insertCell(1);
+                    
+                    const [nome] = jogador.split(';');
+                    celulaNome.textContent = nome.trim();
+                    
+                    const inputNivel = document.createElement('input');
+                    inputNivel.type = 'number';
+                    inputNivel.min = '1';
+                    inputNivel.max = '5';
+                    inputNivel.value = '3';  // Valor padrão
+                    celulaNivel.appendChild(inputNivel);
+                }
+            });
+        }
+
+        function embaralhar(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function sortearTimes() {
+            mostrarHoraNoHTML();
+
+            const tabela = document.getElementById('tabelaJogadores').getElementsByTagName('tbody')[0];
+            const linhas = Array.from(tabela.getElementsByTagName('tr'));
+            
+            const jogadores = linhas.map(linha => {
+                const nome = linha.cells[0].textContent;
+                const nivel = parseInt(linha.cells[1].getElementsByTagName('input')[0].value);
+                return { nome, nivel };
+            });
+
+            // Embaralha os jogadores antes de distribuir
+            embaralhar(jogadores);
+
+            const times = [[], [], []];
+            const nivelDistribuicao = {};
+
+            // Distribui os jogadores alternadamente e de forma aleatória entre os times
+            jogadores.forEach(jogador => {
+                if (!nivelDistribuicao[jogador.nivel]) {
+                    nivelDistribuicao[jogador.nivel] = [0, 1, 2];
+                    embaralhar(nivelDistribuicao[jogador.nivel]);
+                }
+
+                const timeIndex = nivelDistribuicao[jogador.nivel].shift();
+                times[timeIndex].push(jogador);
+
+                if (nivelDistribuicao[jogador.nivel].length === 0) {
+                    nivelDistribuicao[jogador.nivel] = [0, 1, 2];
+                    embaralhar(nivelDistribuicao[jogador.nivel]);
+                }
+            });
+
+            // Ordena os jogadores em cada time do melhor para o pior
+            times.forEach(time => time.sort((a, b) => b.nivel - a.nivel));
+
+            // Exibe os times sem mostrar o nível dos jogadores
+            times.forEach((time, index) => {
+                document.getElementById(`time${index + 1}`).innerHTML = time.map(jogador => `<li>${jogador.nome}</li>`).join('');
+            });
+        }
+    </script>
+</body>
+</html>
